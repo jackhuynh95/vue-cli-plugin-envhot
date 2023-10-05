@@ -18,17 +18,20 @@ module.exports = (api: PluginAPI) => {
   });
 
   api.configureDevServer((app, server) => {
-    const watcher = watch(".env?(.development)?(.local)");
+    // Check if not in production mode
+    if (process.env.NODE_ENV !== 'production') { 
+      const watcher = watch(".env?(.development)?(.local)");
 
-    // changed envFile
-    watcher.on("change", () => {
+      // changed envFile
+      watcher.on("change", () => {
+        parseEnv(envFiles);
+        server.invalidate(() => {});
+        // server.
+      });
+
+      // immediately
       parseEnv(envFiles);
       server.invalidate(() => {});
-      // server.
-    });
-
-    // immediately
-    parseEnv(envFiles);
-    server.invalidate(() => {});
+    }
   });
 };
