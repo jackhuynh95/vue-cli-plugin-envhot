@@ -13,13 +13,13 @@ const envFiles = [
 ];
 
 module.exports = (api: PluginAPI) => {
-  api.chainWebpack((config) => {
-    config.plugins.get("define").tap(runtimeValueFactory);
-  });
+  // Check if not in production mode
+  if (process.env.NODE_ENV !== "production") {
+    api.chainWebpack((config) => {
+      config.plugins.get("define").tap(runtimeValueFactory);
+    });
 
-  api.configureDevServer((app, server) => {
-    // Check if not in production mode
-    if (process.env.NODE_ENV !== 'production') { 
+    api.configureDevServer((app, server) => {
       const watcher = watch(".env?(.development)?(.local)");
 
       // changed envFile
@@ -32,6 +32,6 @@ module.exports = (api: PluginAPI) => {
       // immediately
       parseEnv(envFiles);
       server.invalidate(() => {});
-    }
-  });
+    });
+  }
 };
